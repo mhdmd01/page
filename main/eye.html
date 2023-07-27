@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>eye</title>
+
+	<link rel="icon" href="icon.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="icon.png">
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			$(".move-area").mousemove(function(event) {
+				var eye = $(".eye");
+				console.log('eye', eye)
+				var x = (eye.offset().left) + (eye.width() / 2);
+				var y = (eye.offset().top) + (eye.height() / 2);
+				var rad = Math.atan2(event.pageX - x, event.pageY - y);
+				var rot = (rad * (180 / Math.PI) * -1) + 180;
+				eye.css({
+					'-webkit-transform': 'rotate(' + rot + 'deg)',
+					'-moz-transform': 'rotate(' + rot + 'deg)',
+					'-ms-transform': 'rotate(' + rot + 'deg)',
+					'transform': 'rotate(' + rot + 'deg)'
+				});
+			});
+		});
+	</script>
+
+	<style>
+		.container {
+			position: relative;
+
+		}
+
+		.image-container {
+			position: relative;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: 100%;
+		}
+
+		.image {
+			max-width: 100%;
+			max-height: 100%;
+		}
+
+		.eye {
+			position: absolute;
+			top: 35%;
+			left: 43%;
+			transform: translate(-50%, -50%);
+			border-radius: 50%;
+			height: 150px;
+			width: 150px;
+			background: #fff;
+		}
+
+		.eye:after {
+			position: absolute;
+			bottom: 75px;
+			right: 40px;
+			width: 60px;
+			height: 60px;
+			background: #000;
+			border-radius: 50%;
+			content: " ";
+		}
+	</style>
+</head>
+<body>
+	<section class="move-area">
+		<div class='container'>
+			<div class='image-container'>
+				<img class="image" src="E.png">
+				<div class='eye'></div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>
