@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Communism</title>
+    <title>Comunism</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -72,8 +72,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>Communism</h1>
-        <img src="silvio.jpeg" alt="SQUIDGAMESSS" height="100%" width="100%">
+        <h1>Comunism</h1>
+
+        <img src="silvio.jpeg" alt="SILVIO" height="100%" width="100%">
         
         <div class="input-group">
             <label for="numPeople">Numero di persone:</label>
@@ -81,8 +82,8 @@
         </div>
         
         <div class="input-group">
-            <label for="expenseName">Nome della spesa (es. "Noleggio auto"):</label>
-            <input type="text" id="expenseName" placeholder="Inserisci il nome della spesa">
+            <label for="expenseName">Tipo spesa:</label>
+            <input type="text" id="expenseName" placeholder="(es. Benzina viaggio)">
         </div>
         
         <div class="input-group">
@@ -97,6 +98,8 @@
     </div>
 
     <script>
+        const names = ['Mario', 'Angelica', 'Vas', 'Jack', 'Mattia', 'Mouad', 'Albe', 'Checco', 'Mirio', 'Sofia', 'Chiara', 'Matteo'];
+        
         // Inizializza gli input per le 12 persone
         document.addEventListener('DOMContentLoaded', function() {
             createPeopleInputs();
@@ -108,13 +111,13 @@
             
             const numPeople = parseInt(document.getElementById('numPeople').value);
             
-            for (let i = 1; i <= numPeople; i++) {
+            for (let i = 0; i < numPeople; i++) {
                 const div = document.createElement('div');
                 div.style.marginBottom = '5px';
                 
                 const label = document.createElement('label');
                 label.htmlFor = `person${i}`;
-                label.textContent = `Persona ${i}: €`;
+                label.textContent = `${names[i]}: €`;
                 
                 const input = document.createElement('input');
                 input.type = "number";
@@ -137,10 +140,11 @@
             const payments = [];
             let total = 0;
             
-            for (let i = 1; i <= numPeople; i++) {
+            for (let i = 0; i < numPeople; i++) {
                 const value = parseFloat(document.getElementById(`person${i}`).value) || 0;
                 payments.push({
                     id: i,
+                    name: names[i],
                     paid: value,
                     owes: 0
                 });
@@ -157,11 +161,13 @@
             // Separa debitori e creditori
             const debtors = payments.filter(p => p.owes < 0).map(p => ({
                 id: p.id,
+                name: p.name,
                 amount: -p.owes
             })).sort((a, b) => b.amount - a.amount);
             
             const creditors = payments.filter(p => p.owes > 0).map(p => ({
                 id: p.id,
+                name: p.name,
                 amount: p.owes
             })).sort((a, b) => b.amount - a.amount);
             
@@ -178,7 +184,9 @@
                 
                 transactions.push({
                     from: debtor.id,
+                    fromName: debtor.name,
                     to: creditor.id,
+                    toName: creditor.name,
                     amount: amount.toFixed(2)
                 });
                 
@@ -207,9 +215,11 @@
                 html += `<p>Nessuna transazione necessaria - le spese sono già equamente divise!</p>`;
             } else {
                 transactions.forEach(t => {
-                    html += `<div class="transaction">Persona ${t.from} → Persona ${t.to}: <strong>€${t.amount}</strong></div>`;
+                    html += `<div class="transaction">${t.fromName} → ${t.toName}: <strong>€${t.amount}</strong></div>`;
                 });
             }
+
+            html += `<img src="2psjma.jpg" alt="BROKE-SQUID" height="100%" width="100%">`; //IMAGE SQUIDWARD
             
             resultsDiv.innerHTML = html;
         }
@@ -219,7 +229,7 @@
             
             document.getElementById('expenseName').value = '';
             
-            for (let i = 1; i <= numPeople; i++) {
+            for (let i = 0; i < numPeople; i++) {
                 document.getElementById(`person${i}`).value = '';
             }
             
