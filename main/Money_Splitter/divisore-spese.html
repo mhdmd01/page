@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communism</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, button {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+            display: none;
+        }
+        .transaction {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Communism</h1>
+        <img src="silvio.jpeg" alt="SQUIDGAMESSS" height="100%" width="100%">
+        
+        <div class="input-group">
+            <label for="numPeople">Numero di persone:</label>
+            <input type="number" id="numPeople" min="2" value="12" readonly>
+        </div>
+        
+        <div class="input-group">
+            <label for="expenseName">Nome della spesa (es. "Noleggio auto"):</label>
+            <input type="text" id="expenseName" placeholder="Inserisci il nome della spesa">
+        </div>
+        
+        <div class="input-group">
+            <label>Inserisci quanto ha pagato ogni persona:</label>
+            <div id="peopleInputs"></div>
+        </div>
+        
+        <button onclick="calculate()">Calcola</button>
+        <button onclick="resetForm()">Azzera</button>
+        
+        <div id="results" class="result"></div>
+    </div>
+
+    <script>
+        // Inizializza gli input per le 12 persone
+        document.addEventListener('DOMContentLoaded', function() {
+            createPeopleInputs();
+        });
+
+        function createPeopleInputs() {
+            const container = document.getElementById('peopleInputs');
+            container.innerHTML = '';
+            
+            const numPeople = parseInt(document.getElementById('numPeople').value);
+            
+            for (let i = 1; i <= numPeople; i++) {
+                const div = document.createElement('div');
+                div.style.marginBottom = '5px';
+                
+                const label = document.createElement('label');
+                label.htmlFor = `person${i}`;
+                label.textContent = `Persona ${i}: €`;
+                
+                const input = document.createElement('input');
+                input.type = "number";
+                input.id = `person${i}`;
+                input.step = "0.01";
+                input.min = "0";
+                input.placeholder = "0.00";
+                
+                div.appendChild(label);
+                div.appendChild(input);
+                container.appendChild(div);
+            }
+        }
+
+        function calculate() {
+            const numPeople = parseInt(document.getElementById('numPeople').value);
+            const expenseName = document.getElementById('expenseName').value;
+            
+            // Raccogli i pagamenti
+            const payments = [];
+            let total = 0;
+            
+            for (let i = 1; i <= numPeople; i++) {
+                const value = parseFloat(document.getElementById(`person${i}`).value) || 0;
+                payments.push({
+                    id: i,
+                    paid: value,
+                    owes: 0
+                });
+                total += value;
+            }
+            
+            const average = total / numPeople;
+            
+            // Calcola quanto ogni persona deve ricevere/pagare
+            for (let i = 0; i < payments.length; i++) {
+                payments[i].owes = payments[i].paid - average;
+            }
+            
+            // Separa debitori e creditori
+            const debtors = payments.filter(p => p.owes < 0).map(p => ({
+                id: p.id,
+                amount: -p.owes
+            })).sort((a, b) => b.amount - a.amount);
+            
+            const creditors = payments.filter(p => p.owes > 0).map(p => ({
+                id: p.id,
+                amount: p.owes
+            })).sort((a, b) => b.amount - a.amount);
+            
+            // Calcola le transazioni
+            const transactions = [];
+            let debtorIndex = 0;
+            let creditorIndex = 0;
+            
+            while (debtorIndex < debtors.length && creditorIndex < creditors.length) {
+                const debtor = debtors[debtorIndex];
+                const creditor = creditors[creditorIndex];
+                
+                const amount = Math.min(debtor.amount, creditor.amount);
+                
+                transactions.push({
+                    from: debtor.id,
+                    to: creditor.id,
+                    amount: amount.toFixed(2)
+                });
+                
+                debtor.amount -= amount;
+                creditor.amount -= amount;
+                
+                if (debtor.amount < 0.01) debtorIndex++;
+                if (creditor.amount < 0.01) creditorIndex++;
+            }
+            
+            // Mostra i risultati
+            displayResults(expenseName, total, average, transactions);
+        }
+
+        function displayResults(expenseName, total, average, transactions) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.style.display = 'block';
+            
+            let html = `<h2>Risultati per: ${expenseName || 'spesa senza nome'}</h2>`;
+            html += `<p><strong>Totale speso:</strong> €${total.toFixed(2)}</p>`;
+            html += `<p><strong>Media per persona:</strong> €${average.toFixed(2)}</p>`;
+            
+            html += `<h3>Transazioni necessarie (${transactions.length}):</h3>`;
+            
+            if (transactions.length === 0) {
+                html += `<p>Nessuna transazione necessaria - le spese sono già equamente divise!</p>`;
+            } else {
+                transactions.forEach(t => {
+                    html += `<div class="transaction">Persona ${t.from} → Persona ${t.to}: <strong>€${t.amount}</strong></div>`;
+                });
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function resetForm() {
+            const numPeople = parseInt(document.getElementById('numPeople').value);
+            
+            document.getElementById('expenseName').value = '';
+            
+            for (let i = 1; i <= numPeople; i++) {
+                document.getElementById(`person${i}`).value = '';
+            }
+            
+            document.getElementById('results').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
