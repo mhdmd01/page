@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divisore di Spese per Gruppi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, button, select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button.secondary {
+            background-color: #f44336;
+        }
+        button.secondary:hover {
+            background-color: #d32f2f;
+        }
+        .person-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .person-name {
+            flex: 1;
+        }
+        .person-amount {
+            width: 100px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+            display: none;
+        }
+        .transaction {
+            margin-bottom: 5px;
+            padding: 5px;
+            background-color: white;
+            border-radius: 4px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Divisore di Spese per Gruppi</h1>
+        
+        <div id="setupSection">
+            <div class="input-group">
+                <label for="numPeople">Numero di persone:</label>
+                <input type="number" id="numPeople" min="2" value="4">
+            </div>
+            
+            <button onclick="initializeExpense()">Inizia</button>
+        </div>
+        
+        <div id="expenseSection" class="hidden">
+            <div class="input-group">
+                <label for="expenseName">Nome della spesa (es. "Noleggio auto"):</label>
+                <input type="text" id="expenseName" placeholder="Inserisci il nome della spesa">
+            </div>
+            
+            <div class="input-group">
+                <label>Inserisci i nomi e quanto ha pagato ogni persona:</label>
+                <div id="peopleInputs"></div>
+            </div>
+            
+            <button onclick="calculate()">Calcola</button>
+            <button onclick="resetForm()" class="secondary">Azzera</button>
+            <button onclick="backToSetup()" class="secondary">Cambia numero persone</button>
+            
+            <div id="results" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentNumPeople = 4;
+        let peopleNames = [];
+
+        function initializeExpense() {
+            currentNumPeople = parseInt(document.getElementById('numPeople').value);
+            
+            if (currentNumPeople < 2) {
+                alert("Il numero di persone deve essere almeno 2");
+                return;
+            }
+            
+            createPeopleInputs();
+            document.getElementById('setupSection').classList.add('hidden');
+            document.getElementById('expenseSection').classList.remove('hidden');
+            document.getElementById('expenseName').focus();
+        }
+
+        function createPeopleInputs() {
+            const container = document.getElementById('peopleInputs');
+            container.innerHTML = '';
+            peopleNames = [];
+            
+            for (let i = 1; i <= currentNumPeople; i++) {
+                peopleNames.push(`Persona ${i}`);
+                
+                const row = document.createElement('div');
+                row.className = 'person-row';
+                
+                const nameInput = document.createElement('input');
+                nameInput.type = "text";
+                nameInput.id = `name${i}`;
+                nameInput.className = "person-name";
+                nameInput.placeholder = `Nome persona ${i}`;
+                nameInput.value = `Persona ${i}`;
+                nameInput.onchange = function() { updateName(i, this.value); };
+                
+                const amountInput = document.createElement('input');
+                amountInput.type = "number";
+                amountInput.id = `amount${i}`;
+                amountInput.className = "person-amount";
+                amountInput.step = "0.01";
+                amountInput.min = "0";
+                amountInput.placeholder = "0.00";
+                
+                row.appendChild(nameInput);
+                row.appendChild(amountInput);
+                container.appendChild(row);
+            }
+        }
+
+        function updateName(index, value) {
+            peopleNames[index-1] = value || `Persona ${index}`;
+        }
+
+        function calculate() {
+            const expenseName = document.getElementById('expenseName').value;
+            
+            // Raccogli i pagamenti
+            const payments = [];
+            let total = 0;
+            
+            for (let i = 1; i <= currentNumPeople; i++) {
+                const name = document.getElementById(`name${i}`).value || `Persona ${i}`;
+                const value = parseFloat(document.getElementById(`amount${i}`).value) || 0;
+                
+                payments.push({
+                    id: i,
+                    name: name,
+                    paid: value,
+                    owes: 0
+                });
+                total += value;
+            }
+            
+            const average = total / currentNumPeople;
+            
+            // Calcola quanto ogni persona deve ricevere/pagare
+            for (let i = 0; i < payments.length; i++) {
+                payments[i].owes = payments[i].paid - average;
+            }
+            
+            // Separa debitori e creditori
+            const debtors = payments.filter(p => p.owes < 0).map(p => ({
+                id: p.id,
+                name: p.name,
+                amount: -p.owes
+            })).sort((a, b) => b.amount - a.amount);
+            
+            const creditors = payments.filter(p => p.owes > 0).map(p => ({
+                id: p.id,
+                name: p.name,
+                amount: p.owes
+            })).sort((a, b) => b.amount - a.amount);
+            
+            // Calcola le transazioni
+            const transactions = [];
+            let debtorIndex = 0;
+            let creditorIndex = 0;
+            
+            while (debtorIndex < debtors.length && creditorIndex < creditors.length) {
+                const debtor = debtors[debtorIndex];
+                const creditor = creditors[creditorIndex];
+                
+                const amount = Math.min(debtor.amount, creditor.amount);
+                
+                transactions.push({
+                    from: debtor.id,
+                    fromName: debtor.name,
+                    to: creditor.id,
+                    toName: creditor.name,
+                    amount: amount.toFixed(2)
+                });
+                
+                debtor.amount -= amount;
+                creditor.amount -= amount;
+                
+                if (debtor.amount < 0.01) debtorIndex++;
+                if (creditor.amount < 0.01) creditorIndex++;
+            }
+            
+            // Mostra i risultati
+            displayResults(expenseName, total, average, transactions, payments);
+        }
+
+        function displayResults(expenseName, total, average, transactions, payments) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.style.display = 'block';
+            
+            let html = `<h2>Risultati per: ${expenseName || 'spesa senza nome'}</h2>`;
+            html += `<p><strong>Totale speso:</strong> €${total.toFixed(2)}</p>`;
+            html += `<p><strong>Media per persona:</strong> €${average.toFixed(2)}</p>`;
+            
+            html += `<h3>Riepilogo:</h3><ul>`;
+            payments.forEach(p => {
+                const difference = p.paid - average;
+                if (difference > 0) {
+                    html += `<li><strong>${p.name}</strong> ha pagato €${p.paid.toFixed(2)} (deve ricevere €${difference.toFixed(2)})</li>`;
+                } else if (difference < 0) {
+                    html += `<li><strong>${p.name}</strong> ha pagato €${p.paid.toFixed(2)} (deve dare €${(-difference).toFixed(2)})</li>`;
+                } else {
+                    html += `<li><strong>${p.name}</strong> ha pagato €${p.paid.toFixed(2)} (in pari)</li>`;
+                }
+            });
+            html += `</ul>`;
+            
+            html += `<h3>Transazioni necessarie (${transactions.length}):</h3>`;
+            
+            if (transactions.length === 0) {
+                html += `<p>Nessuna transazione necessaria - le spese sono già equamente divise!</p>`;
+            } else {
+                transactions.forEach(t => {
+                    html += `<div class="transaction"><strong>${t.fromName}</strong> → <strong>${t.toName}</strong>: €${t.amount}</div>`;
+                });
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function resetForm() {
+            document.getElementById('expenseName').value = '';
+            
+            for (let i = 1; i <= currentNumPeople; i++) {
+                document.getElementById(`name${i}`).value = `Persona ${i}`;
+                document.getElementById(`amount${i}`).value = '';
+                updateName(i, `Persona ${i}`);
+            }
+            
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('expenseName').focus();
+        }
+
+        function backToSetup() {
+            document.getElementById('setupSection').classList.remove('hidden');
+            document.getElementById('expenseSection').classList.add('hidden');
+            document.getElementById('results').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
