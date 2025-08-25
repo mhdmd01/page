@@ -210,8 +210,8 @@ function drawBoid(ctx, boid) {
   ctx.rotate(angle);
   
   // Disegna l'immagine dell'uccello, regolando la sua posizione per centrarla
-  const birdWidth = 30;  // Imposta la larghezza dell'immagine
-  const birdHeight = 30; // Imposta l'altezza dell'immagine
+  const birdWidth = 50;  // Imposta la larghezza dell'immagine
+  const birdHeight = 25; // Imposta l'altezza dell'immagine
   ctx.drawImage(birdImage, -birdWidth / 2, -birdHeight / 2, birdWidth, birdHeight);
   
   ctx.restore(); // Ripristina lo stato originale del contesto
