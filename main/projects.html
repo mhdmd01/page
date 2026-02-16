@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Mouad Mahdi - Projects</title>
+    <link rel="icon" href="bird.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="latest.png">
+    <script src="./boids.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      .project {
+        display: flex;
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid #ccc;
+      }
+      .project-image {
+        flex: 0 0 150px;
+        margin-right: 20px;
+      }
+      .project-image img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 1px solid #808080;
+      }
+      .project-info {
+        flex: 1;
+      }
+      .project:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="boids"></canvas>
+    
+    <div id="scrollable-content">
+      <div class="content">
+        <div class="window_heading">
+          <div class="window_heading_icon"></div>
+          <p>Projects - Notepad</p>
+          <div class="window_heading_buttons"></div>
+        </div>
+
+        <div class="window_content">
+          <div class="window_content_inner">
+            <h1>I miei progetti</h1>
+
+            <!-- OOP -->
+            <div class="project">
+              <div class="project-image">
+                <img src="placeholder_project1.jpg" alt="OOP Project">
+              </div>
+              <div class="project-info">
+                <h2>OOP Project</h2>
+                <p>Progetto di Object-Oriented Programming sviluppato in linguaggio C++.</p>
+                <p><strong>Tech stack:</strong> C++, Qt, Makefile, VirtualBox.</p>
+                <p><a href="https://github.com/DavidePicc/OOP_project">Vedi il progetto →</a></p>
+              </div>
+            </div>
+
+            <!-- Database -->
+            <div class="project">
+              <div class="project-image">
+                <img src="placeholder_project2.jpg" alt="Database Project">
+              </div>
+              <div class="project-info">
+                <h2>Database Project</h2>
+                <p>Progetto di basi di dati che include progettazione e interrogazione di database.</p>
+                <p><strong>Tech stack:</strong> SQL, C/C++, PostgreSQL.</p>
+                <p><a href="https://github.com/DavidePicc/Database_Project_2023">Vedi il progetto →</a></p>
+              </div>
+            </div>
+
+            <!-- TecWeb -->
+            <div class="project">
+              <div class="project-image">
+                <img src="placeholder_project3.jpg" alt="TecWeb Project">
+              </div>
+              <div class="project-info">
+                <h2>TecWeb Project</h2>
+                <p>Progetto di Tecnologie Web che coinvolge lo sviluppo di applicazioni web.</p>
+                <p><strong>Tech stack:</strong> PHP, JavaScript, HTML, CSS, XAMPP.</p>
+                <p><a href="https://github.com/mhdmd01/TecWeb-V2">Vedi il progetto →</a></p>
+              </div>
+            </div>
+
+            <!-- SweeTen -->
+            <div class="project">
+              <div class="project-image">
+                <img src="icons/placeholder_project4.png" alt="SweeTenTeam">
+              </div>
+              <div class="project-info">
+                <h2>SweeTenTeam</h2>
+                <p>Progetto di Ingegneria del Software dell'Università di Padova.</p>
+                <p><strong>Tech stack:</strong> TypeScript, JavaScript, Docker.</p>
+                <p><a href="https://github.com/SweeTenTeam">Vedi il progetto →</a></p>
+              </div>
+            </div>
+
+            <!-- Vision AI -->
+            <div class="project">
+              <div class="project-image">
+                <img src="placeholder_project5.jpg" alt="Vision AI">
+              </div>
+              <div class="project-info">
+                <h2>Vision AI</h2>
+                <p>Progetto di stage: sviluppo di API REST in C# per chatbot aziendale e pipeline in Python per estrazione, pulizia ed elaborazione dati con OR-Tools.</p>
+                <p><strong>Tech stack:</strong> C#, .NET, Python (OR-Tools), Ngrok, SQL.</p>
+              </div>
+            </div>
+
+             <!-- Money Splitter -->
+            <div class="project">
+              <div class="project-image">
+                <img src="placeholder_project6.jpg" alt="Money Splitter">
+              </div>
+              <div class="project-info">
+                <h2>Money Splitter</h2>
+                <p>Un semplice programmino fatto per semplificare la divisione delle spese durante una vacanza di gruppo.</p>
+                <p><strong>Tech stack:</strong> Html, JavaScript e Css</p>
+                <p><a href="Money_Splitter/custom.html">Prova →</a></p>
+              </div>
+            </div>
+
+            <p><a href="index.html">← Torna alla homepage</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
